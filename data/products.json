@@ -1,0 +1,182 @@
+[
+  {
+    "product_id": "P001",
+    "name": "SoundMax Pro Headphones",
+    "category": "electronics",
+    "price": 79.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "Premium over-ear headphones with noise cancellation"
+  },
+  {
+    "product_id": "P002",
+    "name": "TrailBlaze Backpack",
+    "category": "accessories",
+    "price": 49.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 6,
+    "description": "Durable 30L hiking backpack, available in blue and red"
+  },
+  {
+    "product_id": "P003",
+    "name": "EcoSip Water Bottle",
+    "category": "home",
+    "price": 17.49,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "Stainless steel insulated water bottle, 750ml"
+  },
+  {
+    "product_id": "P004",
+    "name": "SmartCharge Wireless Charger",
+    "category": "electronics",
+    "price": 129.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "Fast wireless charging pad compatible with all Qi devices"
+  },
+  {
+    "product_id": "P005",
+    "name": "FlexFlow Yoga Mat",
+    "category": "sports",
+    "price": 35.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "Non-slip yoga mat, 6mm thick"
+  },
+  {
+    "product_id": "P006",
+    "name": "BrewMaster Coffee Capsules (x50)",
+    "category": "food",
+    "price": 22.99,
+    "returnable": false,
+    "return_window_days": 0,
+    "warranty_months": 0,
+    "description": "Premium coffee capsules, variety pack, 50 count"
+  },
+  {
+    "product_id": "P007",
+    "name": "LumiDesk LED Lamp",
+    "category": "home",
+    "price": 44.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "Adjustable LED desk lamp with USB charging port"
+  },
+  {
+    "product_id": "P008",
+    "name": "ChefPro Blender",
+    "category": "kitchen",
+    "price": 89.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 24,
+    "description": "High-speed countertop blender, 1200W"
+  },
+  {
+    "product_id": "P009",
+    "name": "DeskOrganizer Set",
+    "category": "office",
+    "price": 19.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "Bamboo desk organizer with pen holder and trays, set of 3"
+  },
+  {
+    "product_id": "P010",
+    "name": "UltraBook Pro 14",
+    "category": "electronics",
+    "price": 349.99,
+    "returnable": true,
+    "return_window_days": 14,
+    "warranty_months": 12,
+    "description": "Lightweight laptop, 14-inch display, 16GB RAM"
+  },
+  {
+    "product_id": "P011",
+    "name": "BoomBox Bluetooth Speaker",
+    "category": "electronics",
+    "price": 65.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "Portable waterproof Bluetooth speaker with 20hr battery"
+  },
+  {
+    "product_id": "P012",
+    "name": "RunPro Athletic Shoes",
+    "category": "footwear",
+    "price": 95.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "Lightweight running shoes with memory foam insole"
+  },
+  {
+    "product_id": "P013",
+    "name": "PortableNeck Fan",
+    "category": "electronics",
+    "price": 42.50,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 6,
+    "description": "Hands-free wearable neck fan, USB-C rechargeable"
+  },
+  {
+    "product_id": "P014",
+    "name": "TabMax 10 Tablet",
+    "category": "electronics",
+    "price": 149.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "10-inch Android tablet with 128GB storage"
+  },
+  {
+    "product_id": "P015",
+    "name": "ChefSharp Knife Set",
+    "category": "kitchen",
+    "price": 55.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "6-piece professional kitchen knife set with block"
+  },
+  {
+    "product_id": "P016",
+    "name": "SilkSoft Pillowcase Set",
+    "category": "home",
+    "price": 38.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "100% silk pillowcases, set of 2, hypoallergenic"
+  },
+  {
+    "product_id": "P017",
+    "name": "AirPurify Pro HEPA Filter",
+    "category": "home",
+    "price": 112.00,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 12,
+    "description": "True HEPA air purifier, coverage up to 500 sq ft"
+  },
+  {
+    "product_id": "P018",
+    "name": "StretchComfort T-Shirt",
+    "category": "clothing",
+    "price": 24.99,
+    "returnable": true,
+    "return_window_days": 30,
+    "warranty_months": 0,
+    "description": "Unisex stretch-fabric t-shirt, available in S/M/L/XL"
+  }
+]

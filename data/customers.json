@@ -1,0 +1,192 @@
+[
+  {
+    "customer_id": "CUST-001",
+    "email": "alice.johnson@email.com",
+    "first_name": "Alice",
+    "last_name": "Johnson",
+    "tier": "standard",
+    "account_created": "2022-01-15",
+    "fraud_flags": [],
+    "total_orders": 8
+  },
+  {
+    "customer_id": "CUST-002",
+    "email": "bob.smith@email.com",
+    "first_name": "Bob",
+    "last_name": "Smith",
+    "tier": "premium",
+    "account_created": "2021-06-20",
+    "fraud_flags": [],
+    "total_orders": 24
+  },
+  {
+    "customer_id": "CUST-003",
+    "email": "carol.white@email.com",
+    "first_name": "Carol",
+    "last_name": "White",
+    "tier": "standard",
+    "account_created": "2023-03-10",
+    "fraud_flags": [],
+    "total_orders": 3
+  },
+  {
+    "customer_id": "CUST-004",
+    "email": "david.brown@email.com",
+    "first_name": "David",
+    "last_name": "Brown",
+    "tier": "standard",
+    "account_created": "2022-09-05",
+    "fraud_flags": ["account_compromise_suspected"],
+    "total_orders": 12
+  },
+  {
+    "customer_id": "CUST-005",
+    "email": "emma.davis@email.com",
+    "first_name": "Emma",
+    "last_name": "Davis",
+    "tier": "vip",
+    "account_created": "2020-04-22",
+    "fraud_flags": [],
+    "total_orders": 67
+  },
+  {
+    "customer_id": "CUST-006",
+    "email": "frank.miller@email.com",
+    "first_name": "Frank",
+    "last_name": "Miller",
+    "tier": "standard",
+    "account_created": "2023-11-01",
+    "fraud_flags": [],
+    "total_orders": 2
+  },
+  {
+    "customer_id": "CUST-007",
+    "email": "grace.wilson@email.com",
+    "first_name": "Grace",
+    "last_name": "Wilson",
+    "tier": "standard",
+    "account_created": "2024-01-08",
+    "fraud_flags": [],
+    "total_orders": 0
+  },
+  {
+    "customer_id": "CUST-008",
+    "email": "henry.marsh@email.com",
+    "first_name": "Henry",
+    "last_name": "Marsh",
+    "tier": "standard",
+    "account_created": "2022-07-14",
+    "fraud_flags": [],
+    "total_orders": 9
+  },
+  {
+    "customer_id": "CUST-009",
+    "email": "isabel.garcia@email.com",
+    "first_name": "Isabel",
+    "last_name": "Garcia",
+    "tier": "premium",
+    "account_created": "2021-02-28",
+    "fraud_flags": [],
+    "total_orders": 31
+  },
+  {
+    "customer_id": "CUST-010",
+    "email": "james.taylor@email.com",
+    "first_name": "James",
+    "last_name": "Taylor",
+    "tier": "standard",
+    "account_created": "2023-05-17",
+    "fraud_flags": [],
+    "total_orders": 5
+  },
+  {
+    "customer_id": "CUST-011",
+    "email": "karen.moore@email.com",
+    "first_name": "Karen",
+    "last_name": "Moore",
+    "tier": "premium",
+    "account_created": "2021-08-30",
+    "fraud_flags": [],
+    "total_orders": 18
+  },
+  {
+    "customer_id": "CUST-012",
+    "email": "liam.anderson@email.com",
+    "first_name": "Liam",
+    "last_name": "Anderson",
+    "tier": "standard",
+    "account_created": "2023-09-12",
+    "fraud_flags": [],
+    "total_orders": 4
+  },
+  {
+    "customer_id": "CUST-013",
+    "email": "mia.jackson@email.com",
+    "first_name": "Mia",
+    "last_name": "Jackson",
+    "tier": "vip",
+    "account_created": "2019-12-01",
+    "fraud_flags": [],
+    "total_orders": 89
+  },
+  {
+    "customer_id": "CUST-014",
+    "email": "noah.thomas@email.com",
+    "first_name": "Noah",
+    "last_name": "Thomas",
+    "tier": "standard",
+    "account_created": "2023-07-22",
+    "fraud_flags": [],
+    "total_orders": 6
+  },
+  {
+    "customer_id": "CUST-015",
+    "email": "olivia.harris@email.com",
+    "first_name": "Olivia",
+    "last_name": "Harris",
+    "tier": "standard",
+    "account_created": "2022-11-19",
+    "fraud_flags": [],
+    "total_orders": 11
+  },
+  {
+    "customer_id": "CUST-017",
+    "email": "peter.clark@email.com",
+    "first_name": "Peter",
+    "last_name": "Clark",
+    "tier": "premium",
+    "account_created": "2021-03-15",
+    "fraud_flags": [],
+    "total_orders": 22
+  },
+  {
+    "customer_id": "CUST-018",
+    "email": "quinn.lewis@email.com",
+    "first_name": "Quinn",
+    "last_name": "Lewis",
+    "tier": "standard",
+    "account_created": "2023-10-05",
+    "fraud_flags": ["tier_fraud_attempt"],
+    "total_orders": 3
+  },
+  {
+    "customer_id": "CUST-019",
+    "email": "rachel.robinson@email.com",
+    "first_name": "Rachel",
+    "last_name": "Robinson",
+    "tier": "standard",
+    "account_created": "2022-05-08",
+    "fraud_flags": [],
+    "total_orders": 14
+  },
+  {
+    "customer_id": "CUST-020",
+    "email": "sam.walker@email.com",
+    "first_name": "Sam",
+    "last_name": "Walker",
+    "tier": "standard",
+    "account_created": "2023-08-25",
+    "fraud_flags": [],
+    "total_orders": 7
+  }
+]

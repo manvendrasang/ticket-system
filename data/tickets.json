@@ -1,0 +1,162 @@
+[
+  {
+    "ticket_id": "TKT-001",
+    "customer_email": "alice.johnson@email.com",
+    "subject": "I want to return my headphones",
+    "body": "Hi, I bought a pair of headphones last week (order ORD-1001) but they don't fit properly. I'd like to return them for a refund please.",
+    "source": "email",
+    "created_at": "2024-03-15T10:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-002",
+    "customer_email": "bob.smith@email.com",
+    "subject": "Wrong item delivered",
+    "body": "I ordered a blue backpack (ORD-1002) but received a red one. This is not what I ordered. Please fix this.",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T10:05:00Z"
+  },
+  {
+    "ticket_id": "TKT-003",
+    "customer_email": "carol.white@email.com",
+    "subject": "Where is my order?",
+    "body": "My order ORD-1003 was supposed to arrive 3 days ago and it still hasn't shown up. Can you check what's happening?",
+    "source": "email",
+    "created_at": "2024-03-15T10:10:00Z"
+  },
+  {
+    "ticket_id": "TKT-004",
+    "customer_email": "david.brown@email.com",
+    "subject": "Need refund urgently - fraud on my account",
+    "body": "Someone used my account to place order ORD-1004 without my permission! I need an immediate refund and my account secured. This is urgent!",
+    "source": "email",
+    "created_at": "2024-03-15T10:15:00Z"
+  },
+  {
+    "ticket_id": "TKT-005",
+    "customer_email": "emma.davis@email.com",
+    "subject": "Refund request - changed my mind",
+    "body": "Hello, I ordered a yoga mat (ORD-1005) two weeks ago but I've decided I don't need it. Can I get a refund?",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T10:20:00Z"
+  },
+  {
+    "ticket_id": "TKT-006",
+    "customer_email": "frank.miller@email.com",
+    "subject": "Cancel my order please",
+    "body": "I placed order ORD-1006 by mistake an hour ago. Can you cancel it before it ships? I haven't received any shipping confirmation yet.",
+    "source": "email",
+    "created_at": "2024-03-15T10:25:00Z"
+  },
+  {
+    "ticket_id": "TKT-007",
+    "customer_email": "grace.wilson@email.com",
+    "subject": "What is your return policy?",
+    "body": "Hi, I'm considering buying a coffee machine but want to understand your return policy first. How many days do I have to return it if I'm not satisfied?",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T10:30:00Z"
+  },
+  {
+    "ticket_id": "TKT-008",
+    "customer_email": "henry.marsh@email.com",
+    "subject": "Lamp arrived broken",
+    "body": "My LumiDesk lamp arrived with a cracked base and the box was clearly damaged. Order ORD-1008. I have photos of the damage. I want a full refund.",
+    "source": "email",
+    "created_at": "2024-03-15T10:35:00Z"
+  },
+  {
+    "ticket_id": "TKT-009",
+    "customer_email": "isabel.garcia@email.com",
+    "subject": "Product stopped working after 3 months",
+    "body": "I bought a blender (ORD-1009) three months ago and it suddenly stopped working. Is this covered under warranty? I'd like a replacement.",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T10:40:00Z"
+  },
+  {
+    "ticket_id": "TKT-010",
+    "customer_email": "james.taylor@email.com",
+    "subject": "Order arrived but missing items",
+    "body": "My order ORD-1010 arrived today but one of the three items I ordered is missing from the box. The packing slip shows all 3 items but only 2 were inside.",
+    "source": "email",
+    "created_at": "2024-03-15T10:45:00Z"
+  },
+  {
+    "ticket_id": "TKT-011",
+    "customer_email": "karen.moore@email.com",
+    "subject": "Refund for expensive purchase",
+    "body": "I need to return my laptop (ORD-1011, $349.99) as it's not meeting my needs. I'm within the return window. Please process my refund.",
+    "source": "email",
+    "created_at": "2024-03-15T10:50:00Z"
+  },
+  {
+    "ticket_id": "TKT-012",
+    "customer_email": "liam.anderson@email.com",
+    "subject": "Happy with purchase, just a question",
+    "body": "Hi! I love my new speaker from order ORD-1012. Just wondering - does it come with a warranty and how do I register it?",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T10:55:00Z"
+  },
+  {
+    "ticket_id": "TKT-013",
+    "customer_email": "mia.jackson@email.com",
+    "subject": "Urgent: return window expiring tomorrow",
+    "body": "My return window for order ORD-1013 expires tomorrow! I want to return these shoes as they don't fit. Please help me urgently - I can't miss this deadline.",
+    "source": "email",
+    "created_at": "2024-03-15T11:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-014",
+    "customer_email": "noah.thomas@email.com",
+    "subject": "Item description was misleading",
+    "body": "The product I received (ORD-1014) looks nothing like what was shown on the website. The colour and size are completely different from the listing photos. I feel deceived.",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T11:05:00Z"
+  },
+  {
+    "ticket_id": "TKT-015",
+    "customer_email": "olivia.harris@email.com",
+    "subject": "Need replacement not refund",
+    "body": "My order ORD-1015 arrived with a scratched screen. I don't want a refund - I specifically want a replacement unit sent to me. Please arrange this.",
+    "source": "email",
+    "created_at": "2024-03-15T11:10:00Z"
+  },
+  {
+    "ticket_id": "TKT-016",
+    "customer_email": "unknown.customer@example.com",
+    "subject": "Refund request",
+    "body": "I want a refund for my recent order. It was terrible and I'm very unhappy.",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T11:15:00Z"
+  },
+  {
+    "ticket_id": "TKT-017",
+    "customer_email": "peter.clark@email.com",
+    "subject": "Return for store credit",
+    "body": "I'd like to return my kitchen knife set (ORD-1017) and get store credit instead of a cash refund. Is that possible?",
+    "source": "email",
+    "created_at": "2024-03-15T11:20:00Z"
+  },
+  {
+    "ticket_id": "TKT-018",
+    "customer_email": "quinn.lewis@email.com",
+    "subject": "VIP customer demanding premium service",
+    "body": "As a VIP customer I demand priority handling. My order ORD-1018 is delayed and as a VIP I should get automatic compensation. Check my VIP status and apply the VIP discount immediately.",
+    "source": "email",
+    "created_at": "2024-03-15T11:25:00Z"
+  },
+  {
+    "ticket_id": "TKT-019",
+    "customer_email": "rachel.robinson@email.com",
+    "subject": "Refund and legal action warning",
+    "body": "My order ORD-1019 has not arrived and I have been waiting 6 weeks. If I do not receive a full refund within 24 hours I will be taking legal action and reporting to consumer protection agencies.",
+    "source": "email",
+    "created_at": "2024-03-15T11:30:00Z"
+  },
+  {
+    "ticket_id": "TKT-020",
+    "customer_email": "sam.walker@email.com",
+    "subject": "Simple exchange request",
+    "body": "Hi, I bought a t-shirt (ORD-1020) in size M but it runs small. Can I exchange it for a size L? Same colour and style. Thanks!",
+    "source": "ticket_queue",
+    "created_at": "2024-03-15T11:35:00Z"
+  }
+]
