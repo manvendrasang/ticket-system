@@ -3,9 +3,10 @@ Pydantic schemas for all data models and tool outputs.
 Every tool response is validated against these before the agent sees it.
 """
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 from enum import Enum
+import math
 
 
 # ─── Enums ────────────────────────────────────────────────────────────────────
@@ -61,19 +62,26 @@ class Ticket(BaseModel):
 
 # ─── Classification ───────────────────────────────────────────────────────────
 
+ALLOWED_CATEGORIES = {e.value for e in TicketCategory}
+ALLOWED_URGENCIES = {e.value for e in Urgency}
+ALLOWED_RESOLVABILITIES = {e.value for e in Resolvability}
+
+
 class Classification(BaseModel):
-    category: str
-    urgency: str
-    resolvability: str
+    category: TicketCategory
+    urgency: Urgency
+    resolvability: Resolvability
     confidence: float
     reasoning: str
 
     @field_validator("confidence")
     @classmethod
     def confidence_range(cls, v: float) -> float:
+        if not isinstance(v, (int, float)) or not math.isfinite(v):
+            raise ValueError("Confidence must be a finite number")
         if not 0.0 <= v <= 1.0:
             raise ValueError("Confidence must be between 0.0 and 1.0")
-        return round(v, 4)
+        return round(float(v), 4)
 
 
 # ─── Tool Output Schemas ──────────────────────────────────────────────────────
@@ -86,7 +94,7 @@ class CustomerResult(BaseModel):
     last_name: Optional[str] = None
     tier: Optional[str] = None
     account_created: Optional[str] = None
-    fraud_flags: Optional[List[str]] = []
+    fraud_flags: List[str] = Field(default_factory=list)
     total_orders: Optional[int] = None
 
 
@@ -102,6 +110,17 @@ class OrderResult(BaseModel):
     delivery_date: Optional[str] = None
     refund_status: Optional[str] = None
     notes: Optional[str] = None
+
+    @field_validator("total_amount")
+    @classmethod
+    def non_negative_amount(cls, v: Optional[float]) -> Optional[float]:
+        if v is None:
+            return v
+        if not isinstance(v, (int, float)) or not math.isfinite(v):
+            raise ValueError("total_amount must be a finite number")
+        if v < 0:
+            raise ValueError("total_amount must be non-negative")
+        return v
 
 
 class ProductResult(BaseModel):
@@ -134,9 +153,11 @@ class RefundInput(BaseModel):
     @field_validator("amount")
     @classmethod
     def positive_amount(cls, v: float) -> float:
+        if not isinstance(v, (int, float)) or not math.isfinite(v):
+            raise ValueError("Refund amount must be a finite number")
         if v <= 0:
             raise ValueError("Refund amount must be positive")
-        return round(v, 2)
+        return round(float(v), 2)
 
 
 class RefundResult(BaseModel):
@@ -178,14 +199,14 @@ class AuditEvent(BaseModel):
     processed_at: Optional[str] = None
     processing_duration_ms: Optional[int] = None
     classification: Optional[dict] = None
-    tool_calls: List[dict] = []
-    retry_events: List[dict] = []
+    tool_calls: List[dict] = Field(default_factory=list)
+    retry_events: List[dict] = Field(default_factory=list)
     reasoning_summary: Optional[str] = None
     confidence: Optional[float] = None
     outcome: Optional[str] = None
     escalated: bool = False
     escalation_reason: Optional[str] = None
-    fraud_signals: List[str] = []
-    policy_references: List[str] = []
+    fraud_signals: List[str] = Field(default_factory=list)
+    policy_references: List[str] = Field(default_factory=list)
     reply_sent: bool = False
     error: Optional[str] = None

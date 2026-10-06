@@ -1,12 +1,19 @@
 """
-Tool registry — defines tools in the format Claude API expects.
-Maps tool names to their Python implementations.
+Tool registry — maps tool names to their Python implementations.
+check_refund_eligibility is read-only in effect but calls get_order
+internally, so it shares read-tool latency/failure characteristics.
+WRITE_TOOLS / IRREVERSIBLE_TOOLS are enforced by the resolver:
+only the fixed pipeline may call them, and issue_refund additionally
+requires eligibility_confirmed + confidence + amount-cap guardrails
+(see app/tools/write_tools.py).
 """
 
 from app.tools.read_tools import get_customer, get_order, get_product, search_knowledge_base
 from app.tools.write_tools import check_refund_eligibility, issue_refund, send_reply, escalate
 
-# ─── Claude API Tool Definitions ─────────────────────────────────────────────
+# ─── Tool Definitions (LLM-facing schema) ────────────────────────────────────
+# NOTE: these dicts document the tool surface for LLM-driven callers.
+# The local pipeline dispatches via TOOL_REGISTRY below instead.
 
 TOOL_DEFINITIONS = [
     {
@@ -153,6 +160,15 @@ TOOL_REGISTRY = {
     "escalate": escalate,
 }
 
-READ_TOOLS = {"get_customer", "get_order", "get_product", "search_knowledge_base", "check_refund_eligibility"}
+READ_TOOLS = {"get_customer", "get_order", "get_product", "search_knowledge_base"}
+READ_ADJACENT_TOOLS = {"check_refund_eligibility"}  # read-only effect, extra latency
 WRITE_TOOLS = {"issue_refund", "send_reply", "escalate"}
 IRREVERSIBLE_TOOLS = {"issue_refund"}
+
+
+def is_read_tool(name: str) -> bool:
+    return name in READ_TOOLS or name in READ_ADJACENT_TOOLS
+
+
+def is_write_tool(name: str) -> bool:
+    return name in WRITE_TOOLS

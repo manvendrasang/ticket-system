@@ -8,9 +8,8 @@ Or via Docker: dashboard is served on port 8000
 import json
 from pathlib import Path
 from typing import Optional
-from datetime import datetime
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 import uvicorn
 
@@ -38,19 +37,23 @@ def load_audit_log() -> list[dict]:
 @app.get("/api/events")
 async def get_events(
     outcome: Optional[str] = Query(None),
-    escalated: Optional[bool] = Query(None),
+    escalated: Optional[str] = Query(None),
     tier: Optional[str] = Query(None),
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
 ) -> JSONResponse:
     events = load_audit_log()
-    
+
     if outcome:
         events = [e for e in events if e.get("outcome") == outcome]
-    if escalated is not None:
-        events = [e for e in events if e.get("escalated") == escalated]
+    if escalated is not None and escalated != "":
+        want = escalated.lower() in ("true", "1", "yes")
+        events = [e for e in events if bool(e.get("escalated")) is want]
     if tier:
         events = [e for e in events if e.get("customer_tier") == tier]
-    
-    return JSONResponse({"events": events, "total": len(events)})
+
+    total = len(events)
+    return JSONResponse({"events": events[offset:offset + limit], "total": total})
 
 
 @app.get("/api/stats")

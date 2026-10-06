@@ -10,23 +10,12 @@ Usage:
 
 import asyncio
 import os
-import sys
 import time
 import argparse
-from datetime import datetime, timezone
 
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
-from rich.progress import (
-    Progress,
-    SpinnerColumn,
-    TextColumn,
-    BarColumn,
-    TaskProgressColumn,
-)
-from rich import print as rprint
-from rich.text import Text
 
 from app.ingestion.loader import load_tickets, load_tickets_by_ids
 from app.agents.resolver import process_ticket
@@ -92,7 +81,7 @@ async def process_all_tickets(
     return results
 
 
-def print_summary(results: list[dict], elapsed: float) -> None:
+def print_summary(results: list[dict], elapsed: float, max_concurrent: int) -> None:
     """Print a rich summary table of all processed tickets."""
     table = Table(title="ShopWave Agent — Processing Summary", show_lines=True)
     table.add_column("Ticket", style="bold")
@@ -148,7 +137,7 @@ def print_summary(results: list[dict], elapsed: float) -> None:
         f"[yellow]Escalated:[/yellow] {escalated_count}  |  "
         f"[cyan]Avg tools/ticket:[/cyan] {avg_tools:.1f}  |  "
         f"[dim]Wall time:[/dim] {elapsed:.1f}s  |  "
-        f"[dim]Max concurrent:[/dim] {MAX_CONCURRENT}"
+        f"[dim]Max concurrent:[/dim] {max_concurrent}"
     )
 
     console.print(Panel(stats, title="Run Statistics", border_style="blue"))
@@ -180,7 +169,7 @@ async def main() -> None:
     console.print(
         Panel(
             "[bold blue]ShopWave Autonomous Support Resolution Agent[/bold blue]\n"
-            "[dim]Python + Anthropic Claude + Async Concurrency[/dim]",
+            "[dim]Local TinyLlama + Async Concurrency[/dim]",
             border_style="blue",
         )
     )
@@ -210,7 +199,7 @@ async def main() -> None:
     results = await process_all_tickets(tickets, max_concurrent=args.max_concurrent)
     elapsed = time.monotonic() - t0
 
-    print_summary(results, elapsed)
+    print_summary(results, elapsed, max_concurrent=args.max_concurrent)
 
 
 if __name__ == "__main__":

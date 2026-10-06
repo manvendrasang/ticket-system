@@ -1,18 +1,22 @@
 """
 Audit logger — writes per-ticket JSON audit events to logs/audit_log.json.
-Thread-safe via asyncio lock. Every decision is traceable.
+Non-blocking via executor + asyncio lock. Every decision is traceable.
 """
 
 import asyncio
+import copy
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+from app.schemas.ticket import AuditEvent
+
 LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
 AUDIT_LOG_PATH = LOGS_DIR / "audit_log.json"
 DEAD_LETTER_PATH = LOGS_DIR / "dead_letter.json"
+
+MAX_LOG_BYTES = 5 * 1024 * 1024  # rotate after 5 MB
 
 _write_lock = asyncio.Lock()
 
@@ -21,28 +25,46 @@ def _ensure_logs_dir() -> None:
     LOGS_DIR.mkdir(exist_ok=True)
 
 
+def _rotate_if_needed(path: Path) -> None:
+    try:
+        if path.exists() and path.stat().st_size > MAX_LOG_BYTES:
+            backup = path.with_suffix(path.suffix + ".1")
+            if backup.exists():
+                backup.unlink()
+            path.rename(backup)
+    except OSError:
+        pass
+
+
+def _append_line(path: Path, payload: dict) -> None:
+    """Blocking file append — always run inside an executor."""
+    _ensure_logs_dir()
+    _rotate_if_needed(path)
+    line = json.dumps(payload) + "\n"
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(line)
+
+
 async def write_audit_event(event: dict) -> None:
     """Append a single audit event to the audit log (JSON lines format)."""
-    _ensure_logs_dir()
-    event["logged_at"] = datetime.now(timezone.utc).isoformat()
-    
+    snapshot = copy.deepcopy(event)
+    snapshot["logged_at"] = datetime.now(timezone.utc).isoformat()
+    loop = asyncio.get_running_loop()
     async with _write_lock:
-        with open(AUDIT_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(event) + "\n")
+        await loop.run_in_executor(None, lambda: _append_line(AUDIT_LOG_PATH, snapshot))
 
 
 async def write_dead_letter(ticket_id: str, reason: str, ticket_data: dict) -> None:
     """Write a ticket that exhausted all retries to the dead letter queue."""
-    _ensure_logs_dir()
     entry = {
         "ticket_id": ticket_id,
         "reason": reason,
-        "ticket_data": ticket_data,
+        "ticket_data": copy.deepcopy(ticket_data),
         "failed_at": datetime.now(timezone.utc).isoformat(),
     }
+    loop = asyncio.get_running_loop()
     async with _write_lock:
-        with open(DEAD_LETTER_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry) + "\n")
+        await loop.run_in_executor(None, lambda: _append_line(DEAD_LETTER_PATH, entry))
 
 
 def build_audit_event(
@@ -64,23 +86,24 @@ def build_audit_event(
     error: Optional[str] = None,
 ) -> dict:
     """Build a complete audit event dict for a processed ticket."""
-    return {
-        "ticket_id": ticket["ticket_id"],
-        "customer_email": ticket["customer_email"],
-        "customer_tier": customer_tier,
-        "created_at": ticket.get("created_at"),
-        "processed_at": processed_at or datetime.now(timezone.utc).isoformat(),
-        "processing_duration_ms": processing_duration_ms,
-        "classification": classification,
-        "tool_calls": tool_calls or [],
-        "retry_events": retry_events or [],
-        "reasoning_summary": reasoning_summary,
-        "confidence": confidence,
-        "outcome": outcome,
-        "escalated": escalated,
-        "escalation_reason": escalation_reason,
-        "fraud_signals": fraud_signals or [],
-        "policy_references": policy_references or [],
-        "reply_sent": reply_sent,
-        "error": error,
-    }
+    event = AuditEvent(
+        ticket_id=ticket["ticket_id"],
+        customer_email=ticket["customer_email"],
+        customer_tier=customer_tier,
+        created_at=ticket.get("created_at", ""),
+        processed_at=processed_at or datetime.now(timezone.utc).isoformat(),
+        processing_duration_ms=processing_duration_ms,
+        classification=classification,
+        tool_calls=tool_calls or [],
+        retry_events=retry_events or [],
+        reasoning_summary=reasoning_summary,
+        confidence=confidence,
+        outcome=outcome,
+        escalated=escalated,
+        escalation_reason=escalation_reason,
+        fraud_signals=fraud_signals or [],
+        policy_references=policy_references or [],
+        reply_sent=reply_sent,
+        error=error,
+    )
+    return event.model_dump()

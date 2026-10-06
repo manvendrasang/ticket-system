@@ -15,9 +15,18 @@ from app.tools.write_tools import (
     issue_refund,
     send_reply,
     escalate,
+    clear_refund_ledger,
     PolicyViolationError,
+    LowConfidenceError,
     EscalationRequired,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clean_ledger():
+    clear_refund_ledger()
+    yield
+    clear_refund_ledger()
 
 
 # ─── Read Tools ───────────────────────────────────────────────────────────────
@@ -147,6 +156,34 @@ class TestIssueRefund:
             asyncio.run(
                 issue_refund("ORD-1011", 349.99, eligibility_confirmed=True, confidence=0.9)
             )
+
+    def test_guardrail_low_confidence(self):
+        with pytest.raises(LowConfidenceError):
+            asyncio.run(
+                issue_refund("ORD-1008", 44.99, eligibility_confirmed=True, confidence=0.5)
+            )
+
+    def test_guardrail_nan_amount_rejected(self):
+        with pytest.raises(ValueError):
+            asyncio.run(
+                issue_refund("ORD-1008", float("nan"), eligibility_confirmed=True, confidence=0.9)
+            )
+
+    def test_guardrail_over_refund_escalated(self):
+        # ORD-1008 totals $44.99 — refunding $100 must escalate, not over-pay
+        with pytest.raises(EscalationRequired):
+            asyncio.run(
+                issue_refund("ORD-1008", 100.00, eligibility_confirmed=True, confidence=0.9)
+            )
+
+    def test_refund_idempotent(self):
+        first = asyncio.run(
+            issue_refund("ORD-1008", 44.99, eligibility_confirmed=True, confidence=0.9)
+        )
+        second = asyncio.run(
+            issue_refund("ORD-1008", 44.99, eligibility_confirmed=True, confidence=0.9)
+        )
+        assert first["refund_id"] == second["refund_id"]
 
     def test_amount_rounds_to_2_decimal_places(self):
         result = asyncio.run(

@@ -1,6 +1,6 @@
 """
 Integration tests for the resolver agent.
-These make real API calls — set ANTHROPIC_API_KEY before running.
+Uses local LLM + deterministic tool mode (FAILURE_SIMULATION=false).
 
 Run with: python -m pytest tests/test_resolver.py -v -s
 """
@@ -9,9 +9,11 @@ import asyncio
 import json
 import os
 import pytest
+from unittest.mock import patch
 
 os.environ["FAILURE_SIMULATION"] = "false"  # Deterministic tests
 
+from app.agents import resolver as resolver_module
 from app.agents.resolver import process_ticket
 
 
@@ -61,10 +63,24 @@ UNKNOWN_CUSTOMER_TICKET = {
 }
 
 
-@pytest.mark.skipif(
-    not os.environ.get("ANTHROPIC_API_KEY"),
-    reason="ANTHROPIC_API_KEY not set"
-)
+# Resolver tests mock the LLM reply path so they run without downloading
+# TinyLlama. Keyword fallback covers classification; reply generation is
+# stubbed to a deterministic string.
+async def _fake_reply(state, action_taken=""):
+    return f"Hi there, {action_taken}"
+
+
+async def _fake_esc_reply(state):
+    return "Hi there, escalated to specialist team."
+
+
+@pytest.fixture(autouse=True)
+def _stub_llm_replies():
+    with patch.object(resolver_module, "_generate_reply", side_effect=_fake_reply), \
+         patch.object(resolver_module, "_generate_escalation_reply", side_effect=_fake_esc_reply):
+        yield
+
+
 class TestResolver:
     def test_damaged_ticket_produces_audit_event(self):
         result = asyncio.run(process_ticket(DAMAGED_TICKET))

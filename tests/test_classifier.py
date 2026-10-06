@@ -2,15 +2,14 @@
 Tests for the ticket classifier.
 Run with: python -m pytest tests/test_classifier.py -v
 
-Note: These tests make real Claude API calls.
-Set ANTHROPIC_API_KEY in environment before running.
+Uses the local TinyLlama model with keyword fallback — no API key required.
 """
 
 import asyncio
 import os
 import pytest
 
-from app.agents.classifier import classify_ticket
+from app.agents.classifier import classify_ticket, _keyword_classify
 from app.schemas.ticket import Classification
 
 
@@ -61,10 +60,6 @@ SIMPLE_QUESTION_TICKET = {
 }
 
 
-@pytest.mark.skipif(
-    not os.environ.get("ANTHROPIC_API_KEY"),
-    reason="ANTHROPIC_API_KEY not set"
-)
 class TestClassifier:
     def test_damaged_ticket_classified_correctly(self):
         result = asyncio.run(classify_ticket(DAMAGED_TICKET))

@@ -12,7 +12,7 @@ Six failure modes are implemented, each with detection, retry, fallback, escalat
 
 **Detection:**
 ```python
-result = await asyncio.wait_for(tool_call(), timeout=TOOL_TIMEOUT_SECONDS)
+result = await asyncio.wait_for(tool_call(), timeout=10)  # hardcoded per-tool timeout
 # asyncio.TimeoutError raised if > 10s
 ```
 
@@ -21,8 +21,8 @@ result = await asyncio.wait_for(tool_call(), timeout=TOOL_TIMEOUT_SECONDS)
 - Each attempt logged with `attempt` number
 
 **Fallback (after 3 failures):**
-- Agent receives: `{"error": "Tool unavailable after 3 retries", "context_incomplete": True}`
-- Agent notes context incomplete in reasoning and falls back to escalation
+- Agent receives: `{"error": "<tool> timed out"}`
+- Agent notes the failure and falls back to escalation for critical tools
 
 **Escalation trigger:**
 - If a critical tool (e.g., `get_customer`) fails all retries → auto-escalate with note "context incomplete due to tool failure"
@@ -32,20 +32,23 @@ result = await asyncio.wait_for(tool_call(), timeout=TOOL_TIMEOUT_SECONDS)
 {
   "tool": "get_order",
   "status": "failed",
-  "error": "Timed out after 3 attempts",
-  "attempt": 3,
+  "error": "get_order timed out after 3 attempts",
   "duration_ms": 30247
 }
 ```
-Plus `retry_events` array with per-attempt timing.
+Plus `retry_events` entries of the form `{"type": "timeout", "tool": ..., "attempt": ...}`.
 
 ---
 
 ## Failure 2: Malformed Tool Response
 
+> NOTE: no malformed-response injection exists in the current code — only
+> `TimeoutError` simulation via `_maybe_fail`. The behaviour below describes
+> how constructed tool outputs are validated, not an injected failure.
+
 **Scenario:** A tool returns data missing required fields (e.g., missing `refund_status`).
 
-**Which tickets trigger it:** Simulated at 5% rate for `check_refund_eligibility` (higher failure rate as it's a write-adjacent tool).
+**Which tickets trigger it:** None via simulation. Pydantic validation applies to all constructed outputs (e.g. `EligibilityResult`, `RefundInput`).
 
 **Detection:**
 ```python
@@ -91,14 +94,15 @@ State flag `eligibility_confirmed` is only set to `True` by a successful `check_
 **Retry behaviour:**
 - Not applicable — this is a hard block, not a transient error
 - Agent receives error and must re-plan
+- The ticket is flagged `escalated=True` on the first violation
 
 **Fallback:**
 - Tool call rejected with `PolicyViolationError`
 - Claude is informed to run eligibility first
-- If agent loops > 2 times on same violation → immediate escalation
 
 **Escalation trigger:**
-- `policy_violation_count >= 2` in the agentic loop → `state.escalation_needed = True`
+- Any policy violation sets `state.escalated = True` immediately
+  (there is no `policy_violation_count` loop counter)
 
 **What's logged:**
 ```json
@@ -134,7 +138,8 @@ if not result.get("found"):
 - If no order ID in ticket either → escalate immediately
 
 **Escalation trigger:**
-- Customer not found AND no order ID in ticket → escalate with priority=low
+- Customer not found AND no order ID in ticket → escalate with priority=medium
+  (standard tier default)
 
 **What's logged:**
 ```json
@@ -198,11 +203,15 @@ if classification.confidence < 0.6:
 ```
 
 **Retry behaviour:**
-- One re-classification attempt with additional context injected into prompt
-- Second attempt uses: `"Previous classification had low confidence. Re-examine carefully."`
+- The LLM parse is retried once (`MAX_RETRIES=2` in the classifier covers
+  unparseable output, not confidence)
 
-**Fallback (after retry):**
-- If still < 0.6 → force `resolvability = "escalate"` regardless of original resolvability
+**Fallback:**
+- `confidence < 0.6` forces the `escalate` path in `_needs_escalation`
+  regardless of the classifier's resolvability value
+- Separately, `issue_refund` requires `confidence >= 0.65`
+  (`MIN_CONFIDENCE_FOR_ACTION`); below that it raises `LowConfidenceError`,
+  which the resolver records as a policy violation and escalates
 
 **Escalation trigger:**
 - Always escalate — ambiguous tickets must have human review

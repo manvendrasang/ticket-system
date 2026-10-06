@@ -18,21 +18,7 @@ other right to use the software.
 
 For licensing or commercial-use inquiries, contact the copyright holder.
 
-
-# ShopWave Autonomous Support Resolution Agent
-
-> Processes customer support tickets end-to-end using Claude + async Python.  
-> Each ticket gets classified, resolved via multi-step tool chains, validated, and logged — automatically.
-
----
-
 ## Architecture
-
-```
-Ticket Ingestion → Classifier → Agent Loop → Tool Layer → Validator → Reply/Escalate
-                                    ↑              ↓
-                              AgentState       Audit Logger
-```
 
 | Layer | File | Responsibility |
 |-------|------|----------------|
@@ -45,14 +31,21 @@ Ticket Ingestion → Classifier → Agent Loop → Tool Layer → Validator → 
 | Audit Log | `app/logging/audit.py` | Full JSON audit trail per ticket |
 | Dashboard | `dashboard/app.py` | FastAPI real-time log viewer |
 
----
 
-## Environment Setup
+# How to run
 
-**1. Get your Anthropic API key** from https://console.anthropic.com
+python -m venv myenv
+source myenv/bin/activate
+pip install -r requirements.txt
 
-**2. Create your `.env` file:**
-```bash
-cp .env.example .env
-# Edit .env and paste your ANTHROPIC_API_KEY
-```
+## all 20 tickets in data/tickets.json
+FAILURE_SIMULATION=false myenv/bin/python -m app.main
+
+## specific tickets, lower concurrency
+FAILURE_SIMULATION=false myenv/bin/python -m app.main --tickets TKT-008 TKT-018 --max-concurrent 3
+
+myenv/bin/python -m uvicorn dashboard.app:app --port 8000
+
+
+# Tests
+FAILURE_SIMULATION=false myenv/bin/python -m pytest tests/ -q
