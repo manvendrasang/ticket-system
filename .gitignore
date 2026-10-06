@@ -145,3 +145,8 @@ myenv/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Local model weights + adapters (GBs, machine-local; see scripts/download_model.py)
+models/*
+!models/.gitkeep
+models/

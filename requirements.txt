@@ -1,6 +1,8 @@
 transformers
 torch
 huggingface_hub
+peft
+accelerate
 pydantic
 fastapi
 uvicorn

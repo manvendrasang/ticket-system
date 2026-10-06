@@ -35,6 +35,12 @@ def _keyword_classify(ticket: dict) -> Classification:
         category = "warranty_claim"
     elif any(w in text for w in ["wrong item", "wrong colour", "wrong color", "not what i ordered"]):
         category = "wrong_item"
+    # Self-declared VIP/premium claims are checked before generic status words
+    # ("delayed", "tracking") so tier-fraud tickets aren't masked as order_status.
+    elif any(w in text for w in ["as a vip", "as vip", "i am vip", "i'm vip", "i am premium",
+                                 "i'm premium", "unauthorized", "premium handling", "vip compensation",
+                                 "vip customer"]):
+        category = "fraud_signal"
     elif any(w in text for w in ["replacement", "replace", "send me a new"]):
         category = "exchange_request"
     elif any(w in text for w in ["cancel", "cancellation"]):
@@ -55,10 +61,6 @@ def _keyword_classify(ticket: dict) -> Classification:
         category = "refund_request"
     elif any(w in text for w in ["policy", "how many days", "how long"]):
         category = "policy_question"
-    elif any(w in text for w in ["as a vip", "as vip", "i am vip", "i'm vip", "i am premium",
-                                 "i'm premium", "unauthorized", "premium handling", "vip compensation",
-                                 "vip customer"]):
-        category = "fraud_signal"
     elif "vip" in text or "premium" in text:
         # Bare mention of tier without a self-declared claim is not fraud
         # (e.g. "are VIPs eligible?"). Fall through to policy/ambiguous.
@@ -73,8 +75,8 @@ def _keyword_classify(ticket: dict) -> Classification:
     else:
         category = "ambiguous"
 
-    # Urgency
-    if legal_threat or any(w in text for w in ["fraud", "unauthorized", "urgent"]):
+    # Urgency — fraud signals and legal threats are always urgent
+    if legal_threat or category == "fraud_signal" or any(w in text for w in ["fraud", "unauthorized", "urgent"]):
         urgency = "urgent"
     elif any(w in text for w in ["broken", "damaged", "wrong", "missing", "overdue"]):
         urgency = "high"

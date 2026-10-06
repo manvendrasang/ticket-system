@@ -230,9 +230,13 @@ async def _generate_reply(state: AgentState, action_taken: str) -> str:
     )
 
     try:
-        return await _chat_nonblocking(REPLY_SYSTEM_PROMPT, context, 200)
+        text = await _chat_nonblocking(REPLY_SYSTEM_PROMPT, context, 200)
     except Exception:
         return _fallback_reply(first_name, state.ticket["subject"], action_taken)
+    if "[" in text or "]" in text or (first_name != "there" and first_name not in text):
+        # Model emitted placeholders or ignored the customer name — template is better
+        return _fallback_reply(first_name, state.ticket["subject"], action_taken)
+    return text
 
 
 async def _generate_escalation_reply(state: AgentState) -> str:
@@ -240,12 +244,15 @@ async def _generate_escalation_reply(state: AgentState) -> str:
     first_name = state.customer.get("first_name", "there") if state.customer.get("found") else "there"
     context = f"Customer name: {first_name}\nIssue: {state.ticket['subject']}"
     try:
-        return await _chat_nonblocking(ESCALATION_SYSTEM_PROMPT, context, 150)
+        text = await _chat_nonblocking(ESCALATION_SYSTEM_PROMPT, context, 150)
     except Exception:
+        text = ""
+    if not text.strip() or "[" in text or "]" in text:
         return (
             f"Hi {first_name},\n\nThank you for reaching out. We've passed your case to our specialist team "
             f"and you'll hear back within 2 business days.\n\nBest regards,\nShopWave Support Team"
         )
+    return text
 
 
 async def process_ticket(ticket: dict) -> dict:
