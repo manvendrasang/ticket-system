@@ -291,6 +291,11 @@ async def process_ticket(ticket: dict) -> dict:
         processing_duration_ms=duration_ms,
     )
     await write_audit_event(audit)
+    try:
+        from app import db as audit_db
+        audit_db.insert_audit_event(audit)
+    except Exception:
+        pass  # JSONL log is the fallback; never fail a ticket on DB errors
     return audit
 
 
@@ -397,7 +402,8 @@ async def _process_ticket_inner(ticket: dict, state: AgentState) -> None:
                         action = f"We have processed a full refund of ${amount:.2f} to your original payment method. Please allow 3-5 business days."
                     else:
                         # Refund blocked by guardrail (low confidence / amount cap)
-                        # -> _run_tool already flagged escalation.
+                        # or tool error -> _run_tool already flagged escalation.
+                        state.escalated = True
                         state.outcome = "escalated"
                         action = f"Your refund request needs specialist review: {refund_res.get('error', 'policy check')}"
                         if not state.escalation_reason:

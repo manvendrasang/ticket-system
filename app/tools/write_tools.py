@@ -5,13 +5,10 @@ Refund guardrails are enforced at the tool level.
 """
 
 import asyncio
-import json
 import math
 import random
 import os
 import uuid
-from datetime import datetime, timezone
-from pathlib import Path
 
 from app.schemas.ticket import (
     EligibilityResult,
@@ -21,11 +18,10 @@ from app.schemas.ticket import (
     EscalationResult,
 )
 from app.tools.read_tools import get_order, get_product
+from app import db as ledger_db
 
 MAX_AUTO_REFUND_AMOUNT = 200.00
 MIN_CONFIDENCE_FOR_ACTION = 0.65
-
-REFUND_LEDGER_PATH = Path(__file__).parent.parent.parent / "logs" / "issued_refunds.json"
 
 
 class PolicyViolationError(Exception):
@@ -57,23 +53,16 @@ def _maybe_fail(tool_name: str, rate: float = 0.08) -> None:
 
 
 def _load_refund_ledger() -> dict:
-    if REFUND_LEDGER_PATH.exists():
-        try:
-            return json.loads(REFUND_LEDGER_PATH.read_text())
-        except (ValueError, OSError):
-            return {}
     return {}
 
 
 def _save_refund_ledger(ledger: dict) -> None:
-    REFUND_LEDGER_PATH.parent.mkdir(exist_ok=True)
-    REFUND_LEDGER_PATH.write_text(json.dumps(ledger, indent=2))
+    pass  # ledger lives in SQLite now (see record path below)
 
 
 def clear_refund_ledger() -> None:
     """Test helper — wipes the idempotency ledger."""
-    if REFUND_LEDGER_PATH.exists():
-        REFUND_LEDGER_PATH.unlink()
+    ledger_db.clear_refunds()
 
 
 async def check_refund_eligibility(order_id: str) -> dict:
@@ -215,10 +204,9 @@ async def issue_refund(
                 f"${float(order['total_amount']):.2f}. Escalate for review."
             )
 
-    # GUARDRAIL 6: Idempotency — one refund per order
-    ledger = _load_refund_ledger()
-    if order_id in ledger:
-        existing = ledger[order_id]
+    # GUARDRAIL 6: Idempotency — one refund per order (SQLite UNIQUE(order_id))
+    existing = ledger_db.get_refund(order_id)
+    if existing is not None:
         return RefundResult(
             refund_id=existing["refund_id"],
             order_id=order_id,
@@ -229,18 +217,17 @@ async def issue_refund(
     await _simulate_latency(min_ms=200, max_ms=500)
     _maybe_fail("issue_refund", rate=0.05)
 
+    stored = ledger_db.record_refund(
+        order_id,
+        f"RF-{uuid.uuid4().hex[:8].upper()}",
+        validated_input.amount,
+    )
     result = RefundResult(
-        refund_id=f"RF-{uuid.uuid4().hex[:8].upper()}",
+        refund_id=stored["refund_id"],
         order_id=validated_input.order_id,
-        amount=validated_input.amount,
+        amount=stored["amount"],
         status="approved",
     )
-    ledger[order_id] = {
-        "refund_id": result.refund_id,
-        "amount": result.amount,
-        "issued_at": datetime.now(timezone.utc).isoformat(),
-    }
-    _save_refund_ledger(ledger)
     return result.model_dump()
 
 

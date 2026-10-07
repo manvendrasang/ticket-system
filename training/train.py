@@ -71,6 +71,7 @@ def main() -> None:
 
     sft = SFTConfig(
         output_dir=args.out,
+        seed=7,
         num_train_epochs=args.epochs,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,

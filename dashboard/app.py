@@ -19,18 +19,41 @@ AUDIT_LOG_PATH = LOGS_DIR / "audit_log.json"
 app = FastAPI(title="ShopWave Agent Dashboard", version="1.0.0")
 
 
+@app.get("/health")
+async def health() -> JSONResponse:
+    return JSONResponse({"status": "ok"})
+
+
 def load_audit_log() -> list[dict]:
+    # Prefer SQLite (source of truth); fall back to the JSONL audit log.
+    try:
+        from app import db as dash_db
+        events = dash_db.list_audit_events(limit=10000)
+        if events:
+            return list(reversed(events))  # oldest-first like the log file
+    except Exception:
+        pass
     if not AUDIT_LOG_PATH.exists():
         return []
     events = []
+    decoder = json.JSONDecoder()
     with open(AUDIT_LOG_PATH, "r") as f:
         for line in f:
             line = line.strip()
-            if line:
-                try:
-                    events.append(json.loads(line))
-                except json.JSONDecodeError:
-                    pass
+            if not line:
+                continue
+            # Tolerant: recover every object even if a line holds several
+            # (concurrent writers) or trailing garbage.
+            idx = 0
+            try:
+                while idx < len(line):
+                    obj, end = decoder.raw_decode(line, idx)
+                    events.append(obj)
+                    idx = end
+                    while idx < len(line) and line[idx].isspace():
+                        idx += 1
+            except json.JSONDecodeError:
+                continue
     return events
 
 

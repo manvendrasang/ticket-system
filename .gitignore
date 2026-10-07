@@ -149,4 +149,10 @@ __pycache__/
 # Local model weights + adapters (GBs, machine-local; see scripts/download_model.py)
 models/*
 !models/.gitkeep
+
+# Runtime SQLite (seeded from data/*.json on first run)
+*.db
+*.db-wal
+*.db-shm
 models/
+.env.example
