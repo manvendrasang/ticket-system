@@ -13,6 +13,10 @@ import os
 import time
 import argparse
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel

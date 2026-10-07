@@ -77,7 +77,7 @@ def main() -> None:
         learning_rate=args.lr,
         logging_steps=10,
         save_steps=200,
-        max_seq_length=1024,
+        max_length=1024,
         packing=False,
         dataset_text_field="text",
         report_to="none",
