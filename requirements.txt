@@ -1,13 +1,6 @@
-transformers
-torch
-huggingface_hub
-peft
-accelerate
-pydantic
 fastapi
 uvicorn
-httpx2
+pydantic
 python-dotenv
-rich
+httpx
 pytest
-pytest-asyncio

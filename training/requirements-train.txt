@@ -1,5 +1,0 @@
-peft
-trl
-accelerate
-bitsandbytes
-datasets
