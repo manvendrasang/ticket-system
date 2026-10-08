@@ -1,3 +1,8 @@
+THIS REPO IS NOW CLOSED AND BEING MERGED UNDER BigCRM REPO
+
+
+
+
 # ShopWave CRM
 
 Production-grade CRM foundation: multi-tenant organizations, RBAC (5 roles),
